@@ -24,3 +24,5 @@ git push origin <name of branch>
 
 Check branch
 git branch
+
+...
