@@ -1,0 +1,26 @@
+Check
+git status
+
+Download
+git pull
+
+Upload
+git add <filename>
+git add .
+
+git commit <branch> or -m <commit message (Str)>
+
+git push
+
+
+
+Create new working branch
+git checkout -b <newBranchName>
+
+Change working branch
+git checkout <name of branch>
+
+git push origin <name of branch>
+
+Check branch
+git branch
