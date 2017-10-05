@@ -1,0 +1,86 @@
+//created on: Sep 10, 2017
+package dtu.is31380.drools
+
+//list any import classes here.
+import dtu.is31380.Sensor
+import dtu.is31380.Actuator
+import dtu.is31380.SystemConstants.DeviceType
+import dtu.is31380.BuildingConfig
+import dtu.is31380.RoomConfig
+import dtu.is31380.HouseControllerInterface
+
+
+//declare any global variables here
+
+/*
+function extractBaseType(String name) {
+    //function content (can have multiple functions) 
+    return name.substring(0, 1);
+}
+*/
+
+
+rule "watch-temp"
+    when
+        //conditions
+       s : Sensor(type == DeviceType.Temperature) //value = $val
+       // : s.value        
+    then
+        //actions
+    	 System.out.println("Current temperature of "+s.getName()+" is "+s.getValue().toString()+" degrees");
+       
+end
+
+
+rule "watch-act"
+    when
+        //conditions
+       a : Actuator( type == DeviceType.PowerControlledHeater) 
+    then
+        //actions
+    	 System.out.println("Actuator "+a.getName()+" has setpoint: "+a.getSetpoint().toString()+" .");       
+end
+
+rule "turn-on"
+    when
+        //conditions
+       b : BuildingConfig()
+       s : Sensor(type == DeviceType.Temperature, value < 20)
+       $rs : RoomConfig() from b.getRoomForSensor(s.getName())
+       a : Actuator( type == DeviceType.PowerControlledHeater) 
+       ra : RoomConfig( name == $rs.name) from b.getRoomForActuator(a.getName())
+       intf : HouseControllerInterface()
+    then
+        //actions
+    	 System.out.println("Turning on  "+a.getName()+" as "+s.getName()+" in room "+ra.getRoomName()+" is below 20 degrees");       
+		intf.setActuator(a.getName(),1.0);
+end
+
+
+rule "turn-off"
+    when
+        //conditions
+       b : BuildingConfig()
+       s : Sensor(type == DeviceType.Temperature, value > 21)
+       $rs : RoomConfig() from b.getRoomForSensor(s.getName())
+       a : Actuator( type == DeviceType.PowerControlledHeater) 
+       ra : RoomConfig( name == $rs.name) from b.getRoomForActuator(a.getName())
+       intf : HouseControllerInterface()
+    then
+        //actions
+    	 System.out.println("Turning off  "+a.getName()+" as "+s.getName()+" in room "+ra.getRoomName()+" is above 21 degrees");       
+		intf.setActuator(a.getName(),0.0);
+end
+
+/*
+rule "Your Second Rule"
+    //include attributes such as "salience" here...
+    when
+        //conditions
+       s :  
+       a : Actuator( type == DeviceType.PowerControlledHeater , value == 0.0) //value = $val
+    then
+        //actions
+
+end
+*/
